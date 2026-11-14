@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Facebook Tool Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .card {
+            background: var(--tg-theme-secondary-bg-color, #f1f1f1);
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h1 { font-size: 20px; margin-bottom: 10px; }
+        p { font-size: 14px; color: var(--tg-theme-hint-color, #707579); }
+        .btn {
+            background-color: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Welcome to FB Tool Mini App! 👋</h1>
+        <p id="greeting">Ready to manage your Facebook workflow.</p>
+        <button class="btn" onclick="showAlert()">Click Me</button>
+    </div>
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        let user = tg.initDataUnsafe?.user;
+        if (user) {
+            document.getElementById("greeting").innerText = `Hello, ${user.first_name}! Ready to manage your Facebook workflow.`;
+        }
+        function showAlert() {
+            tg.showAlert("Your Telegram Mini App is working successfully!");
+        }
+    </script>
+</body>
+</html>
