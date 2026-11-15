@@ -28,7 +28,7 @@
         h1 { font-size: 18px; margin-bottom: 5px; text-align: center; }
         h2 { font-size: 16px; margin-bottom: 10px; }
         p { font-size: 13px; color: var(--tg-theme-hint-color, #707579); text-align: center; margin-bottom: 15px; }
-        input, select {
+        input {
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
@@ -49,12 +49,16 @@
             width: 100%;
             margin-top: 5px;
         }
+        .btn-secondary {
+            background-color: #42b72a; /* Facebook green */
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="card">
         <h1>📱 FB Account Creator</h1>
-        <p id="greeting">Create and track new accounts inside Telegram.</p>
+        <p id="greeting">Manage your account workflow inside Telegram.</p>
     </div>
 
     <div class="card">
@@ -62,7 +66,8 @@
         <input type="text" id="accName" placeholder="Full Name">
         <input type="text" id="accContact" placeholder="Mobile Number or Email">
         <input type="password" id="accPass" placeholder="New Password">
-        <button class="btn" onclick="createAccount()">Create Account</button>
+        <button class="btn" onclick="saveDraft()">Save Details Locally</button>
+        <button class="btn btn-secondary" onclick="openFacebookSignup()">Open Official Facebook Signup</button>
     </div>
 
     <script>
@@ -72,17 +77,17 @@
         if (user) {
             document.getElementById("greeting").innerText = `Welcome, ${user.first_name}! Set up your account below.`;
         }
-        function createAccount() {
+        function saveDraft() {
             let name = document.getElementById("accName").value;
-            let contact = document.getElementById("accContact").value;
-            if (name.trim() === "" || contact.trim() === "") {
-                tg.showAlert("Please fill in all required fields!");
+            if (name.trim() === "") {
+                tg.showAlert("Please fill in your name first!");
                 return;
             }
-            tg.showAlert(`Account details saved for ${name}! Proceeding to registration.`);
-            document.getElementById("accName").value = "";
-            document.getElementById("accContact").value = "";
-            document.getElementById("accPass").value = "";
+            tg.showAlert(`Details saved for ${name}!`);
+        }
+        function openFacebookSignup() {
+            // Opens Facebook's official registration page directly
+            window.open('https://m.facebook.com/reg/', '_blank');
         }
     </script>
 </body>
