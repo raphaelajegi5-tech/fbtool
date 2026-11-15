@@ -50,7 +50,7 @@
             margin-top: 5px;
         }
         .btn-secondary {
-            background-color: #42b72a; /* Facebook green */
+            background-color: #42b72a;
             margin-top: 10px;
         }
     </style>
@@ -86,8 +86,8 @@
             tg.showAlert(`Details saved for ${name}!`);
         }
         function openFacebookSignup() {
-            // Opens Facebook's official registration page directly
-            window.open('https://m.facebook.com/reg/', '_blank');
+            // Uses Telegram's native link opener which works reliably inside Mini Apps
+            tg.openLink('https://m.facebook.com/reg/');
         }
     </script>
 </body>
