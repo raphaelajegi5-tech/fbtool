@@ -1,155 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Facebook Tool</title><button class="add" style="margin-bottom:12px" onclick="tg.openLink('https://www.facebook.com/pages/create')">Create new Facebook Page</button>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>body{padding-top:100px!important}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;background:var(--tg-theme-bg-color,#fff);color:var(--tg-theme-text-color,#000);margin:0;padding:16px}
-h1{font-size:20px;margin:0 0 12px}
-.tabs{display:flex;gap:6px;margin-bottom:14px}
-.tab{flex:1;background:var(--tg-theme-secondary-bg-color,#f1f1f1);color:var(--tg-theme-text-color,#000)}
-.tab.on{background:var(--tg-theme-button-color,#2481cc);color:var(--tg-theme-button-text-color,#fff)}
-.box,.item{background:var(--tg-theme-secondary-bg-color,#f1f1f1);padding:12px;border-radius:12px;margin-bottom:10px}
-input,textarea{width:100%;box-sizing:border-box;padding:10px;margin-bottom:8px;border:1px solid #8884;border-radius:8px;font-size:15px;font-family:inherit;background:var(--tg-theme-bg-color,#fff);color:var(--tg-theme-text-color,#000)}
-button{border:none;border-radius:8px;padding:10px 12px;font-size:14px;cursor:pointer;background:var(--tg-theme-button-color,#2481cc);color:var(--tg-theme-button-text-color,#fff)}
-.add{width:100%}
-.name{font-weight:600;word-break:break-word}
-.note{font-size:13px;color:var(--tg-theme-hint-color,#707579);margin:4px 0 8px;word-break:break-word}
-.row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.del{background:#d9534f;color:#fff}
-.empty{color:var(--tg-theme-hint-color,#707579);text-align:center}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facebook Account Creator Mini App</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+        .card {
+            background: var(--tg-theme-secondary-bg-color, #f1f1f1);
+            padding: 15px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+        h1 { font-size: 18px; margin-bottom: 5px; text-align: center; }
+        h2 { font-size: 16px; margin-bottom: 10px; }
+        p { font-size: 13px; color: var(--tg-theme-hint-color, #707579); text-align: center; margin-bottom: 15px; }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--tg-theme-hint-color, #ccc);
+            box-sizing: border-box;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+        }
+        .btn {
+            background-color: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 5px;
+        }
+    </style>
 </head>
 <body>
-<h1>My Facebook Tool</h1>
-<div class="tabs">
-  <button class="tab on" id="t-pages" onclick="show('pages')">Pages</button>
-  <button class="tab" id="t-friends" onclick="show('friends')">Friends</button>
-  <button class="tab" id="t-tpl" onclick="show('tpl')">Templates</button>
-</div>
+    <div class="card">
+        <h1>📱 FB Account Creator</h1>
+        <p id="greeting">Create and track new accounts inside Telegram.</p>
+    </div>
 
-<div id="pages">
-  <div class="box">
-    <input id="p-name" placeholder="Page name">
-    <input id="p-url" placeholder="Page link">
-    <button class="add" onclick="addPage()">Add page</button>
-  </div>
-  <div id="p-list"></div>
-</div>
+    <div class="card">
+        <h2>Register New Account</h2>
+        <input type="text" id="accName" placeholder="Full Name">
+        <input type="text" id="accContact" placeholder="Mobile Number or Email">
+        <input type="password" id="accPass" placeholder="New Password">
+        <button class="btn" onclick="createAccount()">Create Account</button>
+    </div>
 
-<div id="friends" style="display:none">
-  <div class="box">
-    <input id="f-name" placeholder="Person's name">
-    <input id="f-url" placeholder="Facebook profile link">
-    <input id="f-note" placeholder="Note (optional)">
-    <button class="add" onclick="addFriend()">Save person</button>
-  </div>
-  <div id="f-list"></div>
-</div>
-
-<div id="tpl" style="display:none">
-  <div class="box">
-    <textarea id="m-text" rows="3" placeholder="Write a message template"></textarea>
-    <button class="add" onclick="addTpl()">Save template</button>
-  </div>
-  <div id="m-list"></div>
-</div>
-
-<script>
-const tg = window.Telegram.WebApp;
-tg.expand();
-
-function load(k){try{return JSON.parse(localStorage.getItem(k)||"[]")}catch(e){return []}}
-function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
-let pages=load("fbpages"), friends=load("fbfriends"), tpls=load("fbtpls");
-
-function show(n){
-  ["pages","friends","tpl"].forEach(x=>{
-    document.getElementById(x).style.display = x===n?"block":"none";
-    document.getElementById("t-"+x).classList.toggle("on", x===n);
-  });
-}
-function fixUrl(u){return /^https?:\/\//i.test(u)?u:"https://"+u}
-function msgLink(u){
-  try{
-    const x=new URL(fixUrl(u));
-    const id=x.searchParams.get("id");
-    if(id) return "https://m.me/"+id;
-    const seg=x.pathname.split("/").filter(Boolean)[0];
-    if(seg) return "https://m.me/"+seg;
-  }catch(e){}
-  return fixUrl(u);
-}
-function btn(text,fn,cls){const b=document.createElement("button");b.textContent=text;b.onclick=fn;if(cls)b.className=cls;return b}
-function empty(el,t){const p=document.createElement("p");p.className="empty";p.textContent=t;el.appendChild(p)}
-
-function addPage(){
-  const n=document.getElementById("p-name").value.trim(), u=document.getElementById("p-url").value.trim();
-  if(!n||!u){tg.showAlert("Enter the page name and link.");return}
-  pages.push({n,u:fixUrl(u)});save("fbpages",pages);
-  document.getElementById("p-name").value="";document.getElementById("p-url").value="";renderPages();
-}
-function renderPages(){
-  const l=document.getElementById("p-list");l.innerHTML="";
-  if(!pages.length){empty(l,"No pages yet.");return}
-  pages.forEach((p,i)=>{
-    const d=document.createElement("div");d.className="item";
-    const n=document.createElement("div");n.className="name";n.textContent=p.n;
-    const r=document.createElement("div");r.className="row";
-    r.appendChild(btn("Open",()=>tg.openLink(p.u)));
-    r.appendChild(btn("Delete",()=>{pages.splice(i,1);save("fbpages",pages);renderPages()},"del"));
-    d.appendChild(n);d.appendChild(r);l.appendChild(d);
-  });
-}
-
-function addFriend(){
-  const n=document.getElementById("f-name").value.trim(), u=document.getElementById("f-url").value.trim(), t=document.getElementById("f-note").value.trim();
-  if(!n||!u){tg.showAlert("Enter the name and profile link.");return}
-  friends.push({n,u:fixUrl(u),t});save("fbfriends",friends);
-  ["f-name","f-url","f-note"].forEach(x=>document.getElementById(x).value="");renderFriends();
-}
-function renderFriends(){
-  const l=document.getElementById("f-list");l.innerHTML="";
-  if(!friends.length){empty(l,"No people saved yet.");return}
-  friends.forEach((f,i)=>{
-    const d=document.createElement("div");d.className="item";
-    const n=document.createElement("div");n.className="name";n.textContent=f.n;
-    d.appendChild(n);
-    if(f.t){const t=document.createElement("div");t.className="note";t.textContent=f.t;d.appendChild(t)}
-    const r=document.createElement("div");r.className="row";
-    r.appendChild(btn("Add friend",()=>tg.openLink(f.u)));
-    r.appendChild(btn("Message",()=>tg.openLink(msgLink(f.u))));
-    r.appendChild(btn("Delete",()=>{friends.splice(i,1);save("fbfriends",friends);renderFriends()},"del"));
-    d.appendChild(r);l.appendChild(d);
-  });
-}
-
-function addTpl(){
-  const t=document.getElementById("m-text").value.trim();
-  if(!t){tg.showAlert("Write a message first.");return}
-  tpls.push(t);save("fbtpls",tpls);document.getElementById("m-text").value="";renderTpls();
-}
-function copyText(t){
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(t).then(()=>tg.showAlert("Copied. Paste it in the chat.")).catch(()=>tg.showAlert("Copy failed. Hold and copy the text."));
-  }else{tg.showAlert("Copy not supported on this device.")}
-}
-function renderTpls(){
-  const l=document.getElementById("m-list");l.innerHTML="";
-  if(!tpls.length){empty(l,"No templates yet.");return}
-  tpls.forEach((t,i)=>{
-    const d=document.createElement("div");d.className="item";
-    const n=document.createElement("div");n.textContent=t;
-    const r=document.createElement("div");r.className="row";
-    r.appendChild(btn("Copy",()=>copyText(t)));
-    r.appendChild(btn("Delete",()=>{tpls.splice(i,1);save("fbtpls",tpls);renderTpls()},"del"));
-    d.appendChild(n);d.appendChild(r);l.appendChild(d);
-  });
-}
-
-renderPages();renderFriends();renderTpls();
-</script>
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        let user = tg.initDataUnsafe?.user;
+        if (user) {
+            document.getElementById("greeting").innerText = `Welcome, ${user.first_name}! Set up your account below.`;
+        }
+        function createAccount() {
+            let name = document.getElementById("accName").value;
+            let contact = document.getElementById("accContact").value;
+            if (name.trim() === "" || contact.trim() === "") {
+                tg.showAlert("Please fill in all required fields!");
+                return;
+            }
+            tg.showAlert(`Account details saved for ${name}! Proceeding to registration.`);
+            document.getElementById("accName").value = "";
+            document.getElementById("accContact").value = "";
+            document.getElementById("accPass").value = "";
+        }
+    </script>
 </body>
-        </html>
+</html>
